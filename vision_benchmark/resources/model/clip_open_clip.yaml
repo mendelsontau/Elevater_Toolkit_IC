@@ -1,0 +1,20 @@
+INPUT:
+  MEAN: [0.48145466, 0.4578275, 0.40821073]
+  STD: [0.26862954, 0.26130258, 0.27577711]
+MODEL:
+  NAME: clip_open_clip
+  model: "ViT-B-32"
+  pretrained: "openai"
+  lora: -1
+  image_lora: False
+  text_lora: False
+  prompt_tokens: 0
+  prompt_attention: False
+  prompt_attention_full: False
+  mask_attention: -1
+  precision: "amp"
+  checkpoint_path: ""
+  SPEC:
+    TEXT:
+      TOKENIZER: clip
+      STYLE: clip

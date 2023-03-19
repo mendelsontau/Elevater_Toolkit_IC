@@ -217,8 +217,8 @@ def load_custom_ic_model(config):
 def load_custom_zeroshot_model(config):
     logging.info(f'=> Loading custom model {config.MODEL.NAME}.')
     torch.device("cuda")
-
-    model = eval(config.MODEL.NAME + '.get_zeroshot_model')(config)
+    device = "cuda"
+    model = eval(config.MODEL.NAME + '.get_zeroshot_model')(config,device)
     model_file = config.TEST.MODEL_FILE
     logging.info(f'=> load model file: {model_file}')
     ext = model_file.split('.')[-1]
@@ -231,10 +231,10 @@ def load_custom_zeroshot_model(config):
 
         for k, v in state_dict.items():
             state_dict[k] = torch.from_numpy(v)
-    else:
-        raise ValueError(f'=> Unknown model file, with ext {ext}')
-    msg = model.load_state_dict(state_dict, strict=False)
-    print(f'loading checkpoint msg: {msg}')
+    #else:
+        #raise ValueError(f'=> Unknown model file, with ext {ext}')
+    #msg = model.load_state_dict(state_dict, strict=False)
+    #print(f'loading checkpoint msg: {msg}')
     return model
 
 
@@ -342,7 +342,7 @@ def extract_feature(model, data_loader, config):
             if device == torch.device('cuda'):
                 x = x.cuda(non_blocking=True)
                 y = y.cuda(non_blocking=True)
-            outputs = model(x)
+            outputs = model(x, device)
             all_features.append(outputs.cpu().numpy())
             all_labels.append(y.cpu().numpy())
 
@@ -366,7 +366,7 @@ def multiclass_to_int(indices):
 def extract_features(config, feature_type="image", test_split_only=False):
     model = get_model(config, feature_type=feature_type)
 
-    train_dataloader, val_dataloader, test_dataloader = construct_dataloader(config, feature_type="image", test_split_only=False)
+    train_dataloader, val_dataloader, test_dataloader = construct_dataloader(config, feature_type="image", test_split_only=test_split_only)
 
     test_features, test_labels = extract_feature(model, test_dataloader, config)
     if test_split_only:
@@ -516,7 +516,7 @@ def extract_text_features(config, tokenizer, args=None, model=None, return_numpy
         if config.MODEL.SPEC.get('DENSE_EVAL', False):
             class_embeddings = model.encode_text_dense(texts)
         else:
-            class_embeddings = model.encode_text(texts)
+            class_embeddings = model.encode_text(texts, device)
         class_embeddings /= class_embeddings.norm(dim=-1, keepdim=True)
         class_embedding = class_embeddings.mean(dim=0)
         class_embedding /= class_embedding.norm()
@@ -606,4 +606,4 @@ def construct_dataloader(config, feature_type="image", test_split_only=False):
                                                                     val_split=0.2)
         test_dataloader = get_dataloader(torchvision.datasets.ImageFolder(os.path.join(config.DATASET.ROOT, config.DATASET.TEST_SET), transform=transform_clip))
 
-    return train_dataloader, val_dataloader, test_dataloader
+    return None, None, test_dataloader

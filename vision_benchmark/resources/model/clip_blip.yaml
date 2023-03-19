@@ -1,0 +1,37 @@
+INPUT:
+  MEAN: [0.48145466, 0.4578275, 0.40821073]
+  STD: [0.26862954, 0.26130258, 0.27577711]
+MODEL:
+  NAME: clip_blip
+  model: "ViT-B-16"
+  med_config: "../BLIP/configs/med_config.json"
+  vit: 'base'
+  vit_grad_ckpt: True
+  vit_ckpt_layer: 4
+  image_size: 224
+  queue_size: 57600
+  negative_all_rank: True
+  pretrained: "../BLIP/pretrained_checkpoints/model_base.pth"
+  lora: 16
+  image_lora: True
+  text_lora: True
+  prompts_lora: 32
+  objects: 10
+  object_tokens: 50
+  relations: 0 
+  relation_tokens: 0
+  prompt_attention: True
+  prompt_attention_full: True
+  mask_layers: None
+  negatives: True
+  vg_loss_lambda: 0.1
+  loss_ce: 1.0
+  random_graph_ablation: False
+  checkpoint_path: "../BLIP/output/exp202/epoch_6.pt"
+  SPEC:
+    TEXT:
+      TOKENIZER: blip
+      STYLE: blip
+      SKIP_TOKENIZE: True
+
+

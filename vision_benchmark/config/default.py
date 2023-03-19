@@ -48,6 +48,40 @@ _C.MODEL.SPEC = CN(new_allowed=True)
 _C.MODEL.SPEC.TEXT = CN(new_allowed=True)
 _C.MODEL.SPEC.TEXT.CONTEXT_LENGTH = 77
 
+#open clip params
+_C.MODEL.model = "ViT-B-32"
+_C.MODEL.pretrained = "openai"
+_C.MODEL.lora = -1
+_C.MODEL.image_lora = False
+_C.MODEL.text_lora = False
+_C.MODEL.prompt_tokens = 0
+_C.MODEL.prompt_attention = False
+_C.MODEL.prompt_attention_full = False
+_C.MODEL.mask_attention = -1
+_C.MODEL.precision = "amp"
+_C.MODEL.checkpoint_path = ""
+
+#blip params
+_C.MODEL.vit= 'base'
+_C.MODEL.med_config = ""
+_C.MODEL.vit_grad_ckpt=True
+_C.MODEL.vit_ckpt_layer= 4
+_C.MODEL.image_size= 224
+_C.MODEL.queue_size= 57600
+_C.MODEL.negative_all_rank= True
+_C.MODEL.objects= 0
+_C.MODEL. object_tokens= 0
+_C.MODEL.relations= 0 
+_C.MODEL.relation_tokens= 0
+_C.MODEL.mask_layers= None
+_C.MODEL.negatives= False
+_C.MODEL.random_graph_ablation= False
+_C.MODEL.vg_loss_lambda= 0.0
+_C.MODEL.prompts_lora = -1
+_C.MODEL.loss_ce = 1.0
+_C.MODEL.vg_batch_size = 8
+
+
 _C.MODEL.STATS = CN(new_allowed=True)
 
 _C.LOSS = CN()

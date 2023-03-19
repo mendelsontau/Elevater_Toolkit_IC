@@ -10,19 +10,19 @@ setuptools.setup(name='vision_benchmark',
                  packages=setuptools.find_packages(exclude=['test', 'test.*']),
                  package_data={'': ['resources/*']},
                  install_requires=[
-                     'yacs~=0.1.8',
+                     'yacs>=0.1.8',
                      'scikit-learn',
                      'timm>=0.3.4',
                      'numpy>=1.18.0',
                      'sharedmem',
                      'torch>=1.7.0',
-                     'PyYAML~=5.4.1',
+                     'PyYAML>=5.4.1',
                      'Pillow',
                      'torchvision>=0.8.0',
                      'vision-datasets>=0.2.0',
                      'vision-evaluation>=0.2.2',
-                     'tqdm~=4.62.3',
-                     'transformers~=4.11.3'
+                     'tqdm>=4.62.3',
+                     'transformers>=4.11.3'
                  ],
                  entry_points={
                      'console_scripts': [

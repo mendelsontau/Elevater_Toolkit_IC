@@ -50,7 +50,7 @@ def load_or_extract_features(args, cfg):
         text_features = extract_text_features(cfg, tokenizer, args)
     logging.info(f'Test size is {image_features.shape[0]}.')
 
-    return image_features, text_features, image_labels
+    return image_features, text_features, image_labels, image_features.shape[0]
 
 def load_or_extract_text_features(args, cfg):
     if cfg.MODEL.SPEC.TEXT.TOKENIZER == 'clip':
@@ -86,8 +86,9 @@ def main():
     config.NAME = ""
     config.freeze()
 
-    exp_name = 'zeroshot_eval_' + f'wiki_{config.KNOWLEDGE.WIKITIONARY.USE_DEFINITION}_wnh_{config.KNOWLEDGE.WORDNET.USE_HIERARCHY}_wnd_{config.KNOWLEDGE.WORDNET.USE_DEFINITION}_gpt3_{config.KNOWLEDGE.GPT3.USE_GPT3}'
-    exp_name += f'agg_{config.KNOWLEDGE.AGGREGATION.MEHTOD}_gpt3count_{config.KNOWLEDGE.AGGREGATION.NUM_GPT3_ITEMS}'
+    exp_name = 'zeroshot_eval_' + f'config.DATASET.DATASET'
+    model_name = "blip_token_ablation"
+
     final_output_dir = create_logger(config, exp_name)
 
     if comm.is_main_process():
@@ -97,7 +98,7 @@ def main():
         wiki_dict, gpt3_dict = load_or_extract_text_features(args, config)
 
     else:
-        image_features, text_features, image_labels = load_or_extract_features(args, config)
+        image_features, text_features, image_labels, test_size = load_or_extract_features(args, config)
         result, test_predictions, metric = clip_zeroshot_evaluator(image_features, text_features, image_labels, config)
         msg = f'=> TEST: {metric} {100 * result:.3f}% '
         logging.info(msg)
@@ -113,17 +114,12 @@ def main():
         results_dict = {
             'model_name': f'CLIP-{config.MODEL.NAME}',
             'dataset_name': config.DATASET.DATASET,
-            'num_trainable_params': 0,
-            'num_params': config.MODEL.STATS.get('n_params', None),
-            'num_visual_params': config.MODEL.STATS.get('n_visual_params', None),
-            'num_backbone_params': config.MODEL.STATS.get('n_backbone_params', None),
-            'n_shot': 0,
-            'rnd_seeds': [0],
-            'predictions': [test_predictions.cpu().data.numpy().tolist()],
+            'accuracy': 100 * result,
+            "size": test_size
         }
         json_string = json_prec_dump(results_dict)
 
-        prediction_folder = os.path.join(config.OUTPUT_DIR, 'predictions', exp_name)
+        prediction_folder = os.path.join(config.OUTPUT_DIR, 'predictions', model_name)
         os.makedirs(prediction_folder, exist_ok=True)
         with open(os.path.join(prediction_folder, f'{config.DATASET.DATASET}.json' ) , 'w') as outfile:
             outfile.write(json_string)
